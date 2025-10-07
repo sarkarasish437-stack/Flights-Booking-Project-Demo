@@ -22,7 +22,7 @@ def job_process(env, bq_project, bq_dataset, transformed_table, route_insights_t
         logger.info("Spark session initialized.")
 
         # Resolve GCS path based on the environment
-        input_path = f"gs://airflow-projetcs-gds-dev/flight-booking-analysis/source-{env}"
+        input_path = f"gs://airflow-projetcs-gds-dev_1/flight-booking-analysis/source-{env}"
         logger.info(f"Input path resolved: {input_path}")
 
         # Read the data from GCS
@@ -37,7 +37,7 @@ def job_process(env, bq_project, bq_dataset, transformed_table, route_insights_t
             "is_weekend", when(col("flight_day").isin("Sat", "Sun"), lit(1)).otherwise(lit(0))
         ).withColumn(
             "lead_time_category", when(col("purchase_lead") < 7, lit("Last-Minute"))
-                                  .when((col("purchase_lead") >= 7) & (col("purchase_lead") < 30), lit("Short-Term"))
+                                  .when((col("purchase_lead")>= 7) & (col("purchase_lead") < 30), lit("Short-Term"))
                                   .otherwise(lit("Long-Term"))
         ).withColumn(
             "booking_success_rate", expr("booking_complete / num_passengers")
